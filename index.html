@@ -30,7 +30,7 @@
     min-height: 100vh;
   }
 
-  /* ── Header ── */
+  /* â”€â”€ Header â”€â”€ */
   .header {
     background: linear-gradient(135deg, var(--teal) 0%, #0f4a4a 100%);
     padding: 32px 24px 28px;
@@ -58,7 +58,7 @@
     position: relative;
   }
 
-  /* ── Search Bar ── */
+  /* â”€â”€ Search Bar â”€â”€ */
   .search-wrap {
     max-width: 480px;
     margin: 24px auto 0;
@@ -84,7 +84,7 @@
     color: rgba(255,255,255,0.6); font-size: 1rem; pointer-events: none;
   }
 
-  /* ── Level Tabs ── */
+  /* â”€â”€ Level Tabs â”€â”€ */
   .levels-section {
     padding: 24px 20px 0;
     max-width: 1100px;
@@ -128,7 +128,7 @@
     box-shadow: 0 4px 14px rgba(26,107,107,0.3);
   }
 
-  /* ── Stats Bar ── */
+  /* â”€â”€ Stats Bar â”€â”€ */
   .stats-bar {
     max-width: 1100px;
     margin: 18px auto 0;
@@ -145,7 +145,7 @@
   }
   .stats-count span { color: var(--teal); font-weight: 600; }
 
-  /* ── Grid ── */
+  /* â”€â”€ Grid â”€â”€ */
   .grid {
     max-width: 1100px;
     margin: 20px auto 40px;
@@ -155,7 +155,7 @@
     gap: 18px;
   }
 
-  /* ── Card ── */
+  /* â”€â”€ Card â”€â”€ */
   .card-wrap {
     perspective: 1000px;
     height: 220px;
@@ -288,7 +288,7 @@
     line-height: 1.5;
   }
 
-  /* ── Loading & Error States ── */
+  /* â”€â”€ Loading & Error States â”€â”€ */
   .state-box {
     max-width: 440px;
     margin: 60px auto;
@@ -327,7 +327,7 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── Empty State ── */
+  /* â”€â”€ Empty State â”€â”€ */
   .empty {
     grid-column: 1/-1;
     text-align: center;
@@ -336,7 +336,7 @@
   }
   .empty .icon { font-size: 2.5rem; margin-bottom: 12px; }
 
-  /* ── Responsive ── */
+  /* â”€â”€ Responsive â”€â”€ */
   @media (max-width: 560px) {
     .header h1 { font-size: 1.5rem; }
     .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -353,23 +353,31 @@
 
 
 <div id="app">
+  <header class="header">
+    <h1>Vocabulary Bank</h1>
+    <p>Search words, meanings, and levels instantly</p>
+    <div class="search-wrap">
+      <span class="search-icon">🔎</span>
+      <input id="searchInput" type="text" placeholder="Search vocabulary..." />
+    </div>
+  </header>
   <div class="state-box">
     <div class="spinner"></div>
-    <h3>Loading Vocabulary…</h3>
+    <h3>Loading Vocabularyâ€¦</h3>
     <p>Fetching words from your sheet. Make sure the sheet is published to web.</p>
   </div>
 </div>
 
 <script>
-// ─── CONFIG ─────────────────────────────────────────────
+// â”€â”€â”€ CONFIG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSyvzachk1sJkmUKlJpmgteKbz-OUY9O6lgB_xawD6iay7wodPjuwAaF7OglQ1k8A77tnIims_qf1wy/pub?gid=0&single=true&output=csv';
-// ────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 let allWords = [];
 let activeLevel = 'All';
 let searchQuery = '';
 
-// ── CSV Parser ──
+// â”€â”€ CSV Parser â”€â”€
 function parseCSV(text) {
   const lines = text.trim().split('\n');
   if (lines.length < 2) return [];
@@ -390,7 +398,7 @@ function parseCSV(text) {
   }).filter(r => r['Word'] && r['Word'].length > 0);
 }
 
-// ── Render ──
+// â”€â”€ Render â”€â”€
 function render() {
   const filtered = allWords.filter(w => {
     const matchLevel = activeLevel === 'All' || w['Level'] === activeLevel;
@@ -405,6 +413,15 @@ function render() {
   const levels = ['All', ...new Set(allWords.map(w => w['Level']).filter(Boolean))];
 
   document.getElementById('app').innerHTML = `
+    <header class="header">
+      <h1>Vocabulary Bank</h1>
+      <p>Search words, meanings, and levels instantly</p>
+      <div class="search-wrap">
+        <span class="search-icon">🔎</span>
+        <input id="searchInput" type="text" placeholder="Search vocabulary..." value="${searchQuery}">
+      </div>
+    </header>
+
     <div class="levels-section">
       <div class="levels-label">Select Class / Level</div>
       <div class="levels-scroll">
@@ -425,7 +442,7 @@ function render() {
     <div class="grid" id="grid">
       ${filtered.length === 0 ? `
         <div class="empty">
-          <div class="icon">🔎</div>
+          <div class="icon">ðŸ”Ž</div>
           <p>No words found. Try a different search or level.</p>
         </div>` :
         filtered.map((w, i) => buildCard(w, i)).join('')
@@ -450,7 +467,7 @@ function buildCard(w, i) {
         <div class="word-id">#${idNum}</div>
         <div class="word">${w['Word']}</div>
         <div class="urdu-meaning">${w['Urdu Meaning'] || ''}</div>
-        <div class="flip-hint">↩ tap to reveal details</div>
+        <div class="flip-hint">â†© tap to reveal details</div>
       </div>
       <div class="card-back">
         <div class="back-word">${w['Word']}</div>
@@ -477,13 +494,21 @@ function onSearch(e) {
   if (si) { si.value = searchQuery; si.addEventListener('input', onSearch); }
 }
 
-// ── Fetch ──
+// â”€â”€ Fetch â”€â”€
 async function init() {
   try {
+    const isLocalFile = location.protocol === 'file:';
     const resp = await fetch(CSV_URL);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+    const contentType = (resp.headers.get('content-type') || '').toLowerCase();
     const text = await resp.text();
-    if (text.includes('<!DOCTYPE') || text.includes('<html')) throw new Error('not_published');
+    const looksLikeHtml = contentType.includes('text/html') || text.includes('<!DOCTYPE') || text.includes('<html');
+
+    if (looksLikeHtml) {
+      throw new Error(isLocalFile ? 'local_file_blocked' : 'not_published');
+    }
+
     allWords = parseCSV(text);
     if (allWords.length === 0) throw new Error('empty');
     render();
@@ -492,16 +517,25 @@ async function init() {
       if (e.target.id === 'searchInput') onSearch(e);
     });
   } catch(err) {
-    const isNotPublished = err.message === 'not_published' || err.message.includes('4');
+    const isLocalFile = location.protocol === 'file:';
+    const isLocalFileIssue = err.message === 'local_file_blocked' || (isLocalFile && err.name === 'TypeError');
+    const isNotPublished = err.message === 'not_published' || err.message.includes('403') || err.message.includes('404');
+    const title = isLocalFileIssue
+      ? 'Open This Through a Local Server'
+      : isNotPublished
+        ? 'Sheet Not Published Yet'
+        : 'Could Not Load Sheet';
+    const message = isLocalFileIssue
+      ? `You opened this page as a local file (<strong>file://</strong>). Google Sheets requests often fail in local browser previews even when the same code works on GitHub Pages.<br><br>Run it through a local server like <strong>Live Server</strong> in VS Code, or keep using GitHub Pages.`
+      : isNotPublished
+        ? `To make this work, publish your Google Sheet to the web:<br><br><strong>File → Share → Publish to web → Sheet1 → CSV → Publish</strong>`
+        : `The sheet could not be loaded right now. Check your internet connection, the CSV link, and whether the sheet is still publicly available.`;
+
     document.getElementById('app').innerHTML = `
       <div class="state-box">
         <div class="icon">⚠️</div>
-        <h3>${isNotPublished ? 'Sheet Not Published Yet' : 'Could Not Load Sheet'}</h3>
-        <p>
-          To make this work, publish your Google Sheet to the web:<br><br>
-          <strong>File → Share → Publish to web → Sheet1 → CSV → Publish</strong><br><br>
-          Then paste the embed in Google Sites.
-        </p>
+        <h3>${title}</h3>
+        <p>${message}</p>
         <code>${CSV_URL}</code>
       </div>`;
   }
@@ -511,3 +545,4 @@ init();
 </script>
 </body>
 </html>
+
