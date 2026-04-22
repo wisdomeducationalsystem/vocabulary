@@ -376,6 +376,19 @@ let allWords = [];
 let activeLevel = 'All';
 let searchQuery = '';
 
+function normalizeText(value) {
+  return (value || '').toString().toLowerCase().trim();
+}
+
+function escapeHtml(value) {
+  return (value || '').toString()
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // ── CSV Parser ──
 function parseCSV(text) {
   const lines = text.trim().split('\n');
@@ -401,11 +414,16 @@ function parseCSV(text) {
 function render() {
   const filtered = allWords.filter(w => {
     const matchLevel = activeLevel === 'All' || w['Level'] === activeLevel;
-    const q = searchQuery.toLowerCase();
+    const q = normalizeText(searchQuery);
     const matchSearch = !q ||
-      (w['Word'] || '').toLowerCase().includes(q) ||
-      (w['English Meaning'] || '').toLowerCase().includes(q) ||
-      (w['Urdu Meaning'] || '').includes(q);
+      normalizeText(w['Word']).includes(q) ||
+      normalizeText(w['English Meaning']).includes(q) ||
+      normalizeText(w['Urdu Meaning']).includes(q) ||
+      normalizeText(w['Sentence']).includes(q) ||
+      normalizeText(w['Urdu Sentence']).includes(q) ||
+      normalizeText(w['Synonym']).includes(q) ||
+      normalizeText(w['Antonym']).includes(q) ||
+      normalizeText(w['Level']).includes(q);
     return matchLevel && matchSearch;
   });
 
@@ -425,7 +443,7 @@ function render() {
     <div class="stats-bar">
       <span class="stats-count">Showing <span>${filtered.length}</span> words
         ${activeLevel !== 'All' ? `in <span>${activeLevel}</span>` : ''}
-        ${searchQuery ? `matching "<span>${searchQuery}</span>"` : ''}
+        ${searchQuery ? `matching "<span>${escapeHtml(searchQuery)}</span>"` : ''}
       </span>
     </div>
 
@@ -472,16 +490,11 @@ function buildCard(w, i) {
 function setLevel(level) {
   activeLevel = level;
   render();
-  // re-attach search
-  const si = document.getElementById('searchInput');
-  if (si) { si.value = searchQuery; si.addEventListener('input', onSearch); }
 }
 
 function onSearch(e) {
   searchQuery = e.target.value;
   render();
-  const si = document.getElementById('searchInput');
-  if (si) { si.value = searchQuery; si.addEventListener('input', onSearch); }
 }
 
 // ── Fetch ──
@@ -493,11 +506,12 @@ async function init() {
     if (text.includes('<!DOCTYPE') || text.includes('<html')) throw new Error('not_published');
     allWords = parseCSV(text);
     if (allWords.length === 0) throw new Error('empty');
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.value = searchQuery;
+      searchInput.addEventListener('input', onSearch);
+    }
     render();
-    // attach search
-    document.getElementById('app').addEventListener('input', e => {
-      if (e.target.id === 'searchInput') onSearch(e);
-    });
   } catch(err) {
     const isNotPublished = err.message === 'not_published' || err.message.includes('4');
     document.getElementById('app').innerHTML = `
